@@ -1,196 +1,256 @@
-@import url('https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css');
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --accent-color: #00f2fe;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+}
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Vazir', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    /* پس‌زمینه با گرادیانت تیره و جذاب */
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #ffffff;
+    color: var(--text-primary);
+    overflow-x: hidden;
 }
 
-.app-container {
-    background: rgba(255, 255, 255, 0.1);
+/* افکت نورانی پس‌زمینه برای زیبایی بیشتر */
+body::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #4facfe 0%, transparent 70%);
+    opacity: 0.3;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(50px);
+}
+
+.glass-container {
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 24px;
-    padding: 30px;
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 40px;
     width: 90%;
-    max-width: 450px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    max-width: 420px;
+    box-shadow: var(--glass-shadow);
+    transition: all 0.5s ease;
 }
 
-/* Search Section */
-.search-section {
+/* Search Box */
+.search-box {
     display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-}
-
-.search-section input {
-    flex: 1;
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff;
-    font-size: 1rem;
-    outline: none;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50px;
+    padding: 8px 12px;
+    margin-bottom: 35px;
+    border: 1px solid transparent;
     transition: all 0.3s ease;
 }
 
-.search-section input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
+.search-box:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
 }
 
-.search-section input:focus {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-}
-
-.search-section button {
-    width: 50px;
+.search-box input {
+    flex: 1;
+    background: transparent;
     border: none;
-    border-radius: 12px;
-    background: #ff7e5f;
-    color: white;
+    padding: 10px 15px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+}
+
+.search-box input::placeholder {
+    color: var(--text-secondary);
+}
+
+.search-box button {
+    background: var(--accent-color);
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    color: #111;
+    font-size: 1.1rem;
     cursor: pointer;
-    font-size: 1.2rem;
-    transition: transform 0.2s, background 0.3s;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.search-section button:hover {
-    background: #feb47b;
-    transform: scale(1.05);
+.search-box button:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
 }
 
-/* Weather Main Info */
-.weather-header {
+/* Header & Typography */
+.location-header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .city-name {
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
 }
 
-.local-time {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
+.local-date {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-weight: 300;
     margin-top: 5px;
 }
 
-.weather-core {
+/* Main Weather */
+.current-weather {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    padding: 0 10px;
 }
 
-/* انیمیشن آیکون آب و هوا */
-.icon-container img {
-    width: 120px;
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+.icon-wrapper img {
+    width: 140px;
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4));
 }
 
-.animated-icon {
-    animation: float 3s ease-in-out infinite;
+.floating-icon {
+    animation: float 4s ease-in-out infinite;
 }
 
 @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-    100% { transform: translateY(0px); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
 }
 
-/* بخش دما و متن وضعیت */
-.temperature-container {
-    text-align: center;
-    margin-top: 10px;
+.temp-wrapper {
+    text-align: right;
 }
 
-.temperature-container h1 {
-    font-size: 4rem;
+.temp-wrapper h1 {
+    font-size: 4.5rem;
     font-weight: 700;
-    text-shadow: 2px 4px 10px rgba(0,0,0,0.3);
+    line-height: 1;
+    background: linear-gradient(to right, #fff, rgba(255,255,255,0.7));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.temperature-container h1 span {
+.temp-wrapper h1 span {
     font-size: 2rem;
-    vertical-align: super;
+    position: relative;
+    top: -20px;
 }
 
-.animated-condition {
-    font-size: 1.5rem;
-    margin-top: -5px;
-    color: #ffde59;
-    animation: fadeInUp 1s ease-out forwards;
+.condition-text {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--accent-color);
+    margin-top: 5px;
+    text-transform: capitalize;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Details Grid */
-.weather-details {
+/* Metrics Grid */
+.metrics-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    gap: 20px;
 }
 
-.detail-card {
-    background: rgba(0, 0, 0, 0.2);
+.metric-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
     padding: 15px;
-    border-radius: 16px;
-    text-align: center;
-    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
 }
 
-.detail-card:hover {
+.metric-card:hover {
+    background: rgba(255, 255, 255, 0.08);
     transform: translateY(-5px);
-    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: rgba(0, 242, 254, 0.2);
 }
 
-.detail-card i {
+.metric-icon {
     font-size: 1.5rem;
-    margin-bottom: 8px;
-    color: #ff7e5f;
+    color: var(--accent-color);
+    background: rgba(0, 242, 254, 0.1);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
 }
 
-.detail-card p {
+.metric-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-label {
     font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
 }
 
-.detail-card h3 {
-    font-size: 1.1rem;
-    margin-top: 5px;
+.metric-value {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 2px;
 }
 
-/* کلاس‌های کمکی برای JS */
+/* Utilities */
 .hide {
     display: none !important;
 }
 
-.message-box {
+.message-state {
     text-align: center;
-    padding: 20px;
+    padding: 30px 10px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.message-icon {
+    font-size: 3rem;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.message-state p {
     font-size: 1.1rem;
-    line-height: 1.6;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
