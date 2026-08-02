@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اپلیکیشن آب و هوا</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <!-- اضافه کردن فونت‌آوسوم برای آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- بخش جستجو -->
+        <header class="search-section">
+            <input type="text" id="city-input" placeholder="نام شهر را وارد کنید (مثلا: تهران)..." autocomplete="off">
+            <button id="search-btn" aria-label="جستجو">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </header>
+
+        <!-- بخش نمایش اطلاعات اصلی -->
+        <main class="weather-main hide" id="weather-display">
+            <div class="weather-header">
+                <h2 id="city-name" class="city-name">تهران</h2>
+                <p id="local-time" class="local-time">۱۴:۳۰ - دوشنبه</p>
+            </div>
+
+            <div class="weather-core">
+                <div class="icon-container">
+                    <!-- تصویر/آیکون آب و هوا با انیمیشن -->
+                    <img id="weather-icon" src="https://cdn-icons-png.flaticon.com/512/3222/3222800.png" alt="وضعیت آب و هوا" class="animated-icon">
+                </div>
+                <div class="temperature-container">
+                    <h1 id="temperature">25°<span>C</span></h1>
+                    <p id="weather-condition" class="animated-condition">آفتابی</p>
+                </div>
+            </div>
+
+            <!-- شبکه‌ی جزئیات آب و هوا -->
+            <div class="weather-details">
+                <div class="detail-card">
+                    <i class="fa-solid fa-sunrise"></i>
+                    <p>طلوع خورشید</p>
+                    <h3 id="sunrise-time">05:45</h3>
+                </div>
+                <div class="detail-card">
+                    <i class="fa-solid fa-sunset"></i>
+                    <p>غروب خورشید</p>
+                    <h3 id="sunset-time">19:20</h3>
+                </div>
+                <div class="detail-card">
+                    <i class="fa-solid fa-droplet"></i>
+                    <p>رطوبت</p>
+                    <h3 id="humidity">45%</h3>
+                </div>
+                <div class="detail-card">
+                    <i class="fa-solid fa-wind"></i>
+                    <p>سرعت باد</p>
+                    <h3 id="wind-speed">12 km/h</h3>
+                </div>
+            </div>
+        </main>
+        
+        <!-- پیام خطا یا لودینگ -->
+        <div id="message-box" class="message-box">
+            <p>برای مشاهده وضعیت آب و هوا، نام شهر را جستجو کنید.</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
