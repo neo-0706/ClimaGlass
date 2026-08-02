@@ -3,6 +3,7 @@
     --glass-border: rgba(255, 255, 255, 0.1);
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     --accent-color: #00f2fe;
+    --danger-color: #ff6b6b;
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
 }
@@ -15,7 +16,6 @@
 }
 
 body {
-    /* پس‌زمینه با گرادیانت تیره و جذاب */
     background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     min-height: 100vh;
     display: flex;
@@ -25,7 +25,6 @@ body {
     overflow-x: hidden;
 }
 
-/* افکت نورانی پس‌زمینه برای زیبایی بیشتر */
 body::before {
     content: '';
     position: absolute;
@@ -50,7 +49,9 @@ body::before {
     width: 90%;
     max-width: 420px;
     box-shadow: var(--glass-shadow);
-    transition: all 0.5s ease;
+    /* container height now follows the stage's animated height,
+       this transition smooths out any residual rounding */
+    transition: box-shadow 0.5s ease;
 }
 
 /* Search Box */
@@ -102,6 +103,12 @@ body::before {
 .search-box button:hover {
     transform: scale(1.1) rotate(5deg);
     box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+}
+
+.search-box button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* Header & Typography */
@@ -226,26 +233,9 @@ body::before {
     margin-top: 2px;
 }
 
-/* Utilities */
-.hide {
-    opacity: 0;
-    transform: translateY(20px);
-    pointer-events: none;
-    position: absolute;
-    visibility: hidden;
-    transition: all 0.5s ease-in-out;
-}
-
-#weather-display {
-    opacity: 1;
-    transform: translateY(0);
-    transition: all 0.5s ease-in-out;
-}
-
 .message-state {
     text-align: center;
     padding: 30px 10px;
-    animation: fadeIn 0.5s ease-out;
 }
 
 .message-icon {
@@ -253,6 +243,12 @@ body::before {
     color: var(--text-secondary);
     margin-bottom: 15px;
     opacity: 0.5;
+    transition: color 0.3s ease;
+}
+
+.message-icon.error {
+    color: var(--danger-color);
+    opacity: 0.8;
 }
 
 .message-state p {
@@ -261,7 +257,57 @@ body::before {
     line-height: 1.5;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* ============================================================
+   Stage animation system
+   ------------------------------------------------------------
+   The old approach toggled `position: absolute` + `visibility`
+   on two siblings at the same time. Since position/visibility
+   can't be smoothly animated, the container's height snapped
+   instantly while opacity/transform were still fading, which is
+   what produced the "sudden jump" the moment a city was found.
+
+   Fix: both states now live inside `.content-stage`, stacked in
+   the same grid cell via `.state-wrapper`. Each wrapper animates
+   `grid-template-rows` between 0fr and 1fr (the standard trick
+   for animating to/from "auto" height), so the container's
+   height eases smoothly instead of snapping, while the inner
+   content cross-fades and slides at the same time.
+   ============================================================ */
+
+.content-stage {
+    display: grid;
+}
+
+.state-wrapper {
+    grid-column: 1;
+    grid-row: 1;
+    display: grid;
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transition: grid-template-rows 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.4s ease 0.1s;
+}
+
+.state-wrapper.hide {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    pointer-events: none;
+    transition: grid-template-rows 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.25s ease;
+}
+
+.state-wrapper > * {
+    overflow: hidden;
+    min-height: 0;
+}
+
+.weather-content,
+.message-state {
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(0);
+}
+
+.state-wrapper.hide .weather-content,
+.state-wrapper.hide .message-state {
+    transform: translateY(16px);
 }

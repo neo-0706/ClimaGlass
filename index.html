@@ -31,65 +31,74 @@
         </button>
       </header>
 
-      <!-- Weather Main Information -->
-      <main class="weather-content hide" id="weather-display">
-        <div class="location-header">
-          <h2 id="city-name" class="city-name">London, UK</h2>
-          <p id="local-date" class="local-date">Monday, 14 Aug</p>
-        </div>
-
-        <div class="current-weather">
-          <div class="icon-wrapper">
-            <img
-              id="weather-icon"
-              src="https://cdn-icons-png.flaticon.com/512/3222/3222800.png"
-              alt="Weather Icon"
-              class="floating-icon"
-            />
-          </div>
-          <div class="temp-wrapper">
-            <h1 id="temperature">22<span>°C</span></h1>
-            <p id="weather-condition" class="condition-text">Partly Cloudy</p>
+      <!-- Stage: only one of these two states is visible at a time,
+           but both live in a grid "stack" so the container height
+           animates smoothly instead of jumping. -->
+      <div class="content-stage">
+        <!-- Welcome / Error State -->
+        <div class="state-wrapper" id="message-wrapper">
+          <div class="message-state" id="message-box" aria-live="polite">
+            <i class="fa-solid fa-cloud-sun message-icon" id="message-icon"></i>
+            <p id="message-text">Search for a city to see the magic happen.</p>
           </div>
         </div>
 
-        <!-- Metrics Grid -->
-        <div class="metrics-grid">
-          <div class="metric-card">
-            <div class="metric-icon"><i class="fa-solid fa-sunrise"></i></div>
-            <div class="metric-info">
-              <span class="metric-label">Sunrise</span>
-              <span class="metric-value" id="sunrise-time">06:12 AM</span>
+        <!-- Weather Main Information -->
+        <div class="state-wrapper hide" id="weather-wrapper">
+          <main class="weather-content" id="weather-display">
+            <div class="location-header">
+              <h2 id="city-name" class="city-name">London, UK</h2>
+              <p id="local-date" class="local-date">Monday, 14 Aug</p>
             </div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-icon"><i class="fa-solid fa-sunset"></i></div>
-            <div class="metric-info">
-              <span class="metric-label">Sunset</span>
-              <span class="metric-value" id="sunset-time">08:45 PM</span>
-            </div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-icon"><i class="fa-solid fa-droplet"></i></div>
-            <div class="metric-info">
-              <span class="metric-label">Humidity</span>
-              <span class="metric-value" id="humidity">65%</span>
-            </div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-icon"><i class="fa-solid fa-wind"></i></div>
-            <div class="metric-info">
-              <span class="metric-label">Wind</span>
-              <span class="metric-value" id="wind-speed">18 km/h</span>
-            </div>
-          </div>
-        </div>
-      </main>
 
-      <!-- Welcome / Error State -->
-      <div id="message-box" class="message-state">
-        <i class="fa-solid fa-cloud-sun message-icon"></i>
-        <p>Search for a city to see the magic happen.</p>
+            <div class="current-weather">
+              <div class="icon-wrapper">
+                <img
+                  id="weather-icon"
+                  src="https://cdn-icons-png.flaticon.com/512/3222/3222800.png"
+                  alt="Weather Icon"
+                  class="floating-icon"
+                />
+              </div>
+              <div class="temp-wrapper">
+                <h1 id="temperature">22<span>°C</span></h1>
+                <p id="weather-condition" class="condition-text">Partly Cloudy</p>
+              </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-icon"><i class="fa-solid fa-sunrise"></i></div>
+                <div class="metric-info">
+                  <span class="metric-label">Sunrise</span>
+                  <span class="metric-value" id="sunrise-time">06:12 AM</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-icon"><i class="fa-solid fa-sunset"></i></div>
+                <div class="metric-info">
+                  <span class="metric-label">Sunset</span>
+                  <span class="metric-value" id="sunset-time">08:45 PM</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-icon"><i class="fa-solid fa-droplet"></i></div>
+                <div class="metric-info">
+                  <span class="metric-label">Humidity</span>
+                  <span class="metric-value" id="humidity">65%</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-icon"><i class="fa-solid fa-wind"></i></div>
+                <div class="metric-info">
+                  <span class="metric-label">Wind</span>
+                  <span class="metric-value" id="wind-speed">18 km/h</span>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
       </div>
     </div>
 

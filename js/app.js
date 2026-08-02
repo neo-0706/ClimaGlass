@@ -1,14 +1,18 @@
 const cityInput = document.getElementById("city-input");
 const searchBtn = document.getElementById("search-btn");
-const messageBox = document.getElementById("message-box");
-const weatherDisplay = document.getElementById("weather-display");
+const messageWrapper = document.getElementById("message-wrapper");
+const weatherWrapper = document.getElementById("weather-wrapper");
+const messageIcon = document.getElementById("message-icon");
+const messageText = document.getElementById("message-text");
+
+// NOTE: this key is visible to anyone who opens dev tools / views source.
+// Fine for a personal demo, but before treating this as a "real" project:
+// either restrict the key to your domain in the OpenWeatherMap dashboard,
+// or better, proxy the request through a small serverless function so the
+// key never ships to the browser at all.
 const API_KEY = "46501c7d7efcc7295e001386c0d9a842";
 
-weatherDisplay.classList.add("hide");
-
-searchBtn.addEventListener("click", () => {
-  handleSearch();
-});
+searchBtn.addEventListener("click", handleSearch);
 
 cityInput.addEventListener("keypress", (event) => {
   if (event.key === "Enter") {
@@ -25,6 +29,7 @@ function handleSearch() {
 }
 
 async function getWeatherData(city) {
+  setLoadingState();
   try {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`,
@@ -38,8 +43,22 @@ async function getWeatherData(city) {
     }
   } catch (error) {
     console.error("Error fetching weather data:", error);
-    alert("City not found or network error. Please try again.");
+    showMessage("City not found. Check the spelling and try again.", true);
+  } finally {
+    searchBtn.disabled = false;
   }
+}
+
+function setLoadingState() {
+  searchBtn.disabled = true;
+  showMessage("Fetching weather data...", false, "fa-spinner fa-spin");
+}
+
+function showMessage(text, isError = false, iconClass = "fa-cloud-sun") {
+  messageText.textContent = text;
+  messageIcon.className = `fa-solid ${iconClass} message-icon${isError ? " error" : ""}`;
+  weatherWrapper.classList.add("hide");
+  messageWrapper.classList.remove("hide");
 }
 
 function updateUI(data) {
@@ -66,8 +85,8 @@ function updateUI(data) {
     timezoneOffset,
   );
 
-  messageBox.classList.add("hide");
-  weatherDisplay.classList.remove("hide");
+  messageWrapper.classList.add("hide");
+  weatherWrapper.classList.remove("hide");
 }
 
 function formatTime(unixTimestamp, timezoneOffset) {
