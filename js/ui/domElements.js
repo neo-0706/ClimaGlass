@@ -3,6 +3,7 @@
  */
 export const elements = {
   cityInput: document.getElementById("city-input"),
+  clearBtn: document.getElementById("clear-btn"),
   searchBtn: document.getElementById("search-btn"),
   messageWrapper: document.getElementById("message-wrapper"),
   weatherWrapper: document.getElementById("weather-wrapper"),

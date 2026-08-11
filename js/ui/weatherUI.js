@@ -23,6 +23,20 @@ export function showMessage(text, isError = false, iconClass = "fa-cloud-sun") {
 }
 
 /**
+ * Toggle visibility of the clear saved state button.
+ * @param {boolean} visible 
+ */
+export function toggleClearButton(visible) {
+  if (elements.clearBtn) {
+    if (visible) {
+      elements.clearBtn.classList.remove("hide");
+    } else {
+      elements.clearBtn.classList.add("hide");
+    }
+  }
+}
+
+/**
  * Update and render weather content onto the page.
  * @param {Object} data - Weather API data object
  */
@@ -49,6 +63,7 @@ export function renderWeather(data) {
 
   elements.messageWrapper.classList.add("hide");
   elements.weatherWrapper.classList.remove("hide");
+  toggleClearButton(true);
 }
 
 /**
@@ -57,6 +72,16 @@ export function renderWeather(data) {
  */
 export function getInputValue() {
   return elements.cityInput.value.trim();
+}
+
+/**
+ * Set value in city input field.
+ * @param {string} value 
+ */
+export function setInputValue(value = "") {
+  if (elements.cityInput) {
+    elements.cityInput.value = value;
+  }
 }
 
 /**

@@ -1,3 +1,7 @@
+import { saveItem, getItem, removeItem } from "../utils/storage.js";
+
+const STORAGE_KEY = "climavue_weather_state";
+
 /**
  * Application state manager for tracking weather search state and data.
  */
@@ -21,6 +25,48 @@ class WeatherState {
   }
 
   /**
+   * Serialize and save current application state to localStorage.
+   */
+  saveToStorage() {
+    saveItem(STORAGE_KEY, {
+      weatherData: this.state.weatherData,
+      lastQuery: this.state.lastQuery,
+      timestamp: Date.now()
+    });
+  }
+
+  /**
+   * Rehydrate application state from localStorage if available.
+   * @returns {Object} Loaded state or initial state fallback
+   */
+  loadFromStorage() {
+    const defaultData = { weatherData: null, lastQuery: "" };
+    const stored = getItem(STORAGE_KEY, defaultData);
+
+    if (stored && stored.weatherData) {
+      this.state.weatherData = stored.weatherData;
+      this.state.lastQuery = stored.lastQuery || "";
+      this.notify();
+    }
+
+    return this.getState();
+  }
+
+  /**
+   * Reset application state to default and clear saved storage.
+   */
+  clearState() {
+    this.state = {
+      isLoading: false,
+      weatherData: null,
+      error: null,
+      lastQuery: ""
+    };
+    removeItem(STORAGE_KEY);
+    this.notify();
+  }
+
+  /**
    * Update loading state.
    * @param {boolean} isLoading 
    */
@@ -33,7 +79,7 @@ class WeatherState {
   }
 
   /**
-   * Update weather data on successful fetch.
+   * Update weather data on successful fetch and save to localStorage.
    * @param {Object} data - Weather API payload
    * @param {string} query - Searched city query
    */
@@ -42,6 +88,7 @@ class WeatherState {
     this.state.weatherData = data;
     this.state.error = null;
     this.state.lastQuery = query;
+    this.saveToStorage();
     this.notify();
   }
 
@@ -74,3 +121,4 @@ class WeatherState {
 }
 
 export const weatherState = new WeatherState();
+

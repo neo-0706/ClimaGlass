@@ -6,8 +6,10 @@ import {
   showMessage,
   renderWeather,
   getInputValue,
+  setInputValue,
   clearInput,
-  setSearchDisabled
+  setSearchDisabled,
+  toggleClearButton
 } from "./ui/weatherUI.js";
 
 /**
@@ -24,7 +26,7 @@ async function handleSearch() {
     const data = await getWeatherData(cityName);
     weatherState.setWeatherData(data, cityName);
     renderWeather(data);
-    clearInput();
+    setInputValue(data.name);
   } catch (error) {
     console.error("Error fetching weather data:", error);
     weatherState.setError(error.message);
@@ -35,11 +37,35 @@ async function handleSearch() {
 }
 
 /**
+ * Handle clearing persistent weather state.
+ */
+function handleClear() {
+  weatherState.clearState();
+  clearInput();
+  showMessage("Search for a city to see the magic happen.", false);
+  toggleClearButton(false);
+}
+
+/**
  * Initialize event listeners and start the application.
  */
 function init() {
+  // Rehydrate state from localStorage on app load
+  const currentState = weatherState.loadFromStorage();
+
+  if (currentState.weatherData) {
+    renderWeather(currentState.weatherData);
+    setInputValue(currentState.lastQuery || currentState.weatherData.name || "");
+  } else {
+    toggleClearButton(false);
+  }
+
   if (elements.searchBtn) {
     elements.searchBtn.addEventListener("click", handleSearch);
+  }
+
+  if (elements.clearBtn) {
+    elements.clearBtn.addEventListener("click", handleClear);
   }
 
   if (elements.cityInput) {
