@@ -1,115 +1,85 @@
-const cityInput = document.getElementById("city-input");
-const searchBtn = document.getElementById("search-btn");
-const messageWrapper = document.getElementById("message-wrapper");
-const weatherWrapper = document.getElementById("weather-wrapper");
-const messageIcon = document.getElementById("message-icon");
-const messageText = document.getElementById("message-text");
+import { getWeatherData } from "./services/weatherApi.js";
+import { weatherState } from "./state/weatherState.js";
+import { elements } from "./ui/domElements.js";
+import {
+  setLoadingState,
+  showMessage,
+  renderWeather,
+  getInputValue,
+  setInputValue,
+  clearInput,
+  setSearchDisabled,
+  toggleClearButton
+} from "./ui/weatherUI.js";
 
-// NOTE: this key is visible to anyone who opens dev tools / views source.
-// Fine for a personal demo, but before treating this as a "real" project:
-// either restrict the key to your domain in the OpenWeatherMap dashboard,
-// or better, proxy the request through a small serverless function so the
-// key never ships to the browser at all.
-const API_KEY = "46501c7d7efcc7295e001386c0d9a842";
+/**
+ * Handle city weather search action.
+ */
+async function handleSearch() {
+  const cityName = getInputValue();
+  if (!cityName) return;
 
-searchBtn.addEventListener("click", handleSearch);
-
-cityInput.addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
-    handleSearch();
-  }
-});
-
-function handleSearch() {
-  const cityName = cityInput.value.trim();
-  if (cityName !== "") {
-    getWeatherData(cityName);
-    cityInput.value = "";
-  }
-}
-
-async function getWeatherData(city) {
+  weatherState.setLoading(true);
   setLoadingState();
-  try {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`,
-    );
 
-    if (response.ok) {
-      const data = await response.json();
-      updateUI(data);
-    } else {
-      throw new Error(`City not found (Status: ${response.status})`);
-    }
+  try {
+    const data = await getWeatherData(cityName);
+    weatherState.setWeatherData(data, cityName);
+    renderWeather(data);
+    setInputValue(data.name);
   } catch (error) {
     console.error("Error fetching weather data:", error);
+    weatherState.setError(error.message);
     showMessage("City not found. Check the spelling and try again.", true);
   } finally {
-    searchBtn.disabled = false;
+    setSearchDisabled(false);
   }
 }
 
-function setLoadingState() {
-  searchBtn.disabled = true;
-  showMessage("Fetching weather data...", false, "fa-spinner fa-spin");
+/**
+ * Handle clearing persistent weather state.
+ */
+function handleClear() {
+  weatherState.clearState();
+  clearInput();
+  showMessage("Search for a city to see the magic happen.", false);
+  toggleClearButton(false);
 }
 
-function showMessage(text, isError = false, iconClass = "fa-cloud-sun") {
-  messageText.textContent = text;
-  messageIcon.className = `fa-solid ${iconClass} message-icon${isError ? " error" : ""}`;
-  weatherWrapper.classList.add("hide");
-  messageWrapper.classList.remove("hide");
+/**
+ * Initialize event listeners and start the application.
+ */
+function init() {
+  // Rehydrate state from localStorage on app load
+  const currentState = weatherState.loadFromStorage();
+
+  if (currentState.weatherData) {
+    renderWeather(currentState.weatherData);
+    setInputValue(currentState.lastQuery || currentState.weatherData.name || "");
+  } else {
+    toggleClearButton(false);
+  }
+
+  if (elements.searchBtn) {
+    elements.searchBtn.addEventListener("click", handleSearch);
+  }
+
+  if (elements.clearBtn) {
+    elements.clearBtn.addEventListener("click", handleClear);
+  }
+
+  if (elements.cityInput) {
+    elements.cityInput.addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+        handleSearch();
+      }
+    });
+  }
 }
 
-function updateUI(data) {
-  document.getElementById("city-name").textContent =
-    `${data.name}, ${data.sys.country}`;
-  document.getElementById("temperature").innerHTML =
-    `${Math.round(data.main.temp)}<span>°C</span>`;
-  document.getElementById("humidity").textContent = `${data.main.humidity}%`;
-  document.getElementById("wind-speed").textContent = `${data.wind.speed} km/h`;
-  document.getElementById("weather-condition").textContent =
-    data.weather[0].description;
-
-  const timezoneOffset = data.timezone;
-  const localDate = getLocalTime(timezoneOffset);
-
-  document.getElementById("local-date").textContent = localDate.dateString;
-
-  document.getElementById("sunrise-time").textContent = formatTime(
-    data.sys.sunrise,
-    timezoneOffset,
-  );
-  document.getElementById("sunset-time").textContent = formatTime(
-    data.sys.sunset,
-    timezoneOffset,
-  );
-
-  messageWrapper.classList.add("hide");
-  weatherWrapper.classList.remove("hide");
-}
-
-function formatTime(unixTimestamp, timezoneOffset) {
-  const date = new Date((unixTimestamp + timezoneOffset) * 1000);
-  let hours = date.getUTCHours();
-  let minutes = date.getUTCMinutes();
-
-  minutes = minutes < 10 ? "0" + minutes : minutes;
-
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-
-  return `${hours}:${minutes} ${ampm}`;
-}
-
-function getLocalTime(timezoneOffset) {
-  const d = new Date();
-  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
-  const cityTime = new Date(utc + 3600000 * (timezoneOffset / 3600));
-
-  const options = { weekday: "long", day: "numeric", month: "short" };
-  const dateString = cityTime.toLocaleDateString("en-US", options);
-
-  return { dateString };
+// Start application after DOM ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
 }
